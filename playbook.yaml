@@ -1,0 +1,8 @@
+
+- hosts: build_machine
+  remote_user: root
+  vars:
+    -  target_dir: riddles
+  roles:
+    - {role: build_images}
+    - {role: deploy_websites}

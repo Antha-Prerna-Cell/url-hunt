@@ -1,0 +1,62 @@
+---
+
+# Ensure target directory exists
+
+# - name: cat file
+#   shell: cat riddles/camera/index.html
+#   register: hostsfile
+
+# - name: echo file
+#   debug:
+#     msg: "{{ hostsfile.stdout }}"
+
+
+- name: install docker python module 
+  pip:
+    name: docker
+
+- name: copy Dockerfile to destination folder
+  copy:
+    src: Dockerfile
+    dest: "{{target_dir}}/{{ item.path }}/Dockerfile"
+  become: true
+  with_filetree: riddles/
+  when: item.state == 'directory'
+
+- name: copy .dockerignore to destination folder
+  copy:
+    src: .dockerignore
+    dest: "{{target_dir}}/{{ item.path }}/.dockerignore"
+  become: true
+  with_filetree: riddles/
+  when: item.state == 'directory'
+
+# - name: Get name of image
+#   shell: cat {{target_dir}}/camera/conf
+#   register: imagename
+
+- name: build docker image
+  shell: "docker build {{target_dir}}/{{ item.path }}/ -t webhunt/$(cat {{target_dir}}/{{item.path}}/conf)"
+  become: true
+  with_filetree: riddles/
+  when: item.state == 'directory'
+
+
+- name : delete Dockerfile from destination folder
+  file:
+    path: "{{target_dir}}/{{ item.path }}/Dockerfile"
+    state: absent
+  become: true
+  with_filetree: riddles/
+  when: item.state == 'directory'
+
+- name : delete .dockerignore from destination folder
+  file:
+    path: "{{target_dir}}/{{ item.path }}/.dockerignore"
+    state: absent
+  become: true
+  with_filetree: riddles/
+  when: item.state == 'directory'
+
+
+
