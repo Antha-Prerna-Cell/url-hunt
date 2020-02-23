@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.url}}-deployment
+  labels:
+    website: {{.Values.url}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      website: {{.Values.url}}
+  template:
+    metadata:
+      labels:
+        website: {{.Values.url}}
+    spec:
+      containers:
+      - name: {{.Values.url}}
+        image: webhunt/{{.Values.url}}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
