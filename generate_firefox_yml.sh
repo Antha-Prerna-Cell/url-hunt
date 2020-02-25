@@ -25,5 +25,5 @@ do
 	ip=$(kubectl get svc $svc -o go-template={{.spec.clusterIP}})
 	echo "        - ip: \"$ip\"
           hostnames:
-            - \"$svc\""
+            - \"$svc.in\""
 done
